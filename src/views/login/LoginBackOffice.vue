@@ -48,7 +48,7 @@ export default {
 
             try {
                 const { data } = await axios.post(process.env.VUE_APP_BASE_URL + 'auth/login-backoffice', body);
-                localStorage.setItem('token_backoffice', data.token);
+                localStorage.setItem('token_backoffice', data.access_token);
                 localStorage.setItem('sub_backoffice', data.sub);
                 this.$router.push('/backoffice');
             } catch (error) {

@@ -104,6 +104,9 @@ export default {
     rules: [
       v => !!v || 'Campo requerido',
     ],
+    config: {
+      headers: { Authorization: `Bearer ` }
+    }
   }),
   methods: {
     async getDesserts() {
@@ -128,7 +131,9 @@ export default {
     async addCourse() {
       this.loadingIPI = true;
       this.dataModal.idUser = localStorage.getItem('sub_backoffice');
-      const { data } = await axios.post(process.env.VUE_APP_BASE_URL + 'courses', this.dataModal);
+      const body = this.dataModal
+      const config = this.config;
+      const { data } = await axios.post(process.env.VUE_APP_BASE_URL + 'courses', body, config);
       if (data.success) {
         setTimeout(() => {
           this.closedModalEdit()
@@ -149,12 +154,15 @@ export default {
       confirm('¿Estas seguro de eliminar este curso?') && this.deleteItemApi(item.id);
     },
     async deleteItemApi(id) {
-      const { data } = await axios.delete(process.env.VUE_APP_BASE_URL + `courses/${id}`);
+      const config = this.config;
+      const { data } = await axios.delete(process.env.VUE_APP_BASE_URL + `courses/${id}`, config);
       this.getDesserts();
     },
     async saveItem() {
       this.loadingIPI = true;
-      const { data } = await axios.put(process.env.VUE_APP_BASE_URL + `courses/${this.dataModal.id}`, this.dataModal);
+      const body = this.dataModal
+      const config = this.config;
+      const { data } = await axios.put(process.env.VUE_APP_BASE_URL + `courses/${this.dataModal.id}`, body, config);
       this.modal = false;
       this.getDesserts();
       this.loadingIPI = false;
@@ -162,6 +170,8 @@ export default {
     closedSession() {
       localStorage.removeItem('token_backoffice');
       localStorage.removeItem('sub_backoffice');
+      localStorage.removeItem('sub')
+      localStorage.removeItem('token');
       this.$router.push('/login-backoffice');
     }
   },
@@ -170,6 +180,7 @@ export default {
     if (!token) {
       this.$router.push('/login-backoffice');
     }
+    this.config.headers.Authorization = `Bearer ${token}`;
     await this.getDesserts();
   },
 }

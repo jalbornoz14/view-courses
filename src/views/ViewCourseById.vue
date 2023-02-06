@@ -24,9 +24,27 @@
                         v-if="isNoSucription">
                         Suscribirse
                     </v-btn>
+                    <v-btn color="info" class="white--text" elevation="2" @click="valuing" v-if="course.calificationByUser === null">
+                        Valorar
+                    </v-btn>
                 </div>
             </div>
         </div>
+        <v-dialog v-model="modal" max-width="400px">
+            <v-card>
+                <v-card-title>
+                    Calificar Curso
+                </v-card-title>
+                <v-card-text>
+                    <v-rating hover length="5" size="40" value="5" v-model="calification"></v-rating>
+                </v-card-text>
+                <v-card-text class="d-flex justify-end">
+                    <v-btn color="success" @click="setCalification">
+                        Enviar
+                    </v-btn>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -47,11 +65,35 @@ export default {
                 califications: 0,
                 price: 0,
                 isSuscription: false,
+                calificationByUser: 0,
             },
             isNoSucription: false,
+            modal: false,
+            calification: 5,
         }
     },
     methods: {
+        valuing() {
+            this.modal = true;
+        },
+        async setCalification() {
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+            const body = {
+                calification: this.calification,
+                idUser: localStorage.getItem("sub"),
+                idCourse: this.course.id
+            }
+            const { data } = await axios.post(
+                process.env.VUE_APP_BASE_URL + "courses/califiacation"
+                , body
+                , config
+            );
+            this.modal = false;
+            this.getCourseByIdUser();
+        },
         async getCourseById() {
             const { data } = await axios.get(
                 process.env.VUE_APP_BASE_URL + "courses/" + this.$route.params.id
@@ -60,9 +102,13 @@ export default {
             this.isNoSucription = true;
         },
         async getCourseByIdUser() {
-
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
             const { data } = await axios.get(
                 process.env.VUE_APP_BASE_URL + "courses/" + this.$route.params.id + "/user/" + localStorage.getItem("sub")
+                , config
             );
             if (data.success === false) {
                 return await this.getCourseById();
@@ -75,6 +121,9 @@ export default {
         },
         async suscription() {
             const token = localStorage.getItem("token");
+            if (!token){
+                return this.$router.push("/login");
+            }
             const config = {
                 headers: { Authorization: `Bearer ${token}` }
             };

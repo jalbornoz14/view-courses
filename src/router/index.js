@@ -58,6 +58,14 @@ const routes = [
         /* webpackChunkName: "MyCoursesView" */ "../views/MyCoursesView.vue"
       ),
   },
+  {
+    path: "/register",
+    name: "register",
+    component: () =>
+      import(
+        /* webpackChunkName: "RegisterView" */ "../views/register/RegisterView.vue"
+      ),
+  },
 ];
 
 const router = new VueRouter({

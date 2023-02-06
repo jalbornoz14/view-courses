@@ -7,6 +7,7 @@
 
       <v-btn text to="/">Inicio</v-btn>
       <v-btn text to="login" v-if="!isLogger">Entrar</v-btn>
+      <v-btn text to="register" v-if="!isLogger">Registrarme</v-btn>
       <v-btn text to="my-courses" v-if="isLogger">Mis Cursos</v-btn>
       <v-btn text @click="loggout" v-if="isLogger">Cerrar Sesion</v-btn>
     </v-app-bar>
@@ -45,6 +46,8 @@ export default {
     loggout() {
       localStorage.removeItem('token');
       localStorage.removeItem('sub');
+      localStorage.removeItem('token_backoffice');
+      localStorage.removeItem('sub_backoffice');
       this.$router.push('/login');
     }
   },

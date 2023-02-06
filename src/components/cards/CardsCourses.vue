@@ -40,7 +40,7 @@ export default {
         },
         noCalification: {
             type: Boolean,
-            default: false
+            default: true
         }
     },
     data: () => ({
